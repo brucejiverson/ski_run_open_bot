@@ -33,22 +33,24 @@ def scrape_ski_run_information() -> ski_run.SkiRunScrapeData:
     ski_runs:Dict[str, ski_run.SkiRunData] = {}
     for area_element in mountain_areas:
         mountain_area_name:str = area_element.find("h1", class_="area-name ttu").text
-        ski_run_elements:BeautifulSoup = area_element.find_all("div", class_="trail col no-stretch keep-padding expandable")
+        if mountain_area_name == 'Nordic': continue
+        open_ski_run_elements:BeautifulSoup = area_element.find_all("div", class_="trail col no-stretch keep-padding expandable")
+        closed_ski_run_elements:BeautifulSoup = area_element.find_all("div", class_="trail col no-stretch keep-padding closed-trail")
         
-        for ski_run_element in ski_run_elements:
-            name = ski_run_element.find("div", class_="trail-name").text
-            difficulty = parse_element_to_match_enum(ski_run_element, ski_run.Difficulty)
-            run_status = parse_element_to_match_enum(ski_run_element, ski_run.RunStatus)
-            
-            run = ski_run.SkiRunData(
-                name,
-                difficulty,
-                run_status,
-                mountain_area_name
-            )
-            logger.debug("Found run: " + str(run))
-            ski_runs[name] = run
-    logger.info(f'Found a total of {len(ski_runs)} runs at Solitude')
+        for ski_run_element in (closed_ski_run_elements, open_ski_run_elements):
+            for element in ski_run_element:
+                name = element.find("div", class_="trail-name").text
+                difficulty = parse_element_to_match_enum(element, ski_run.Difficulty)
+                run_status = parse_element_to_match_enum(element, ski_run.RunStatus)
+                
+                run = ski_run.SkiRunData(
+                    difficulty,
+                    run_status,
+                    mountain_area_name
+                )
+                logger.debug(f"Webscraped run {name}, {difficulty.name.lower()}, it is {run_status.name}")    #, {run}")
+                ski_runs[name] = run
+    logger.debug(f'Found a total of {len(ski_runs)} runs at Solitude')
     return ski_run.SkiRunScrapeData(time.monotonic(), 'solitude', ski_runs)
 
 

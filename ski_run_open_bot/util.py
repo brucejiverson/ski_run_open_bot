@@ -37,7 +37,7 @@ def create_formatted_logger(name:str, verbosity:int=logging.INFO, save_to_file:b
         # Create formatters and add it to handlers, add the handles to the logger
         file_handler = logging.FileHandler(file_path)
         file_handler.setLevel(verbosity)
-        file_format = logging.Formatter('%(name)s; %(levelname)s; %(message)s') # %(asctime)s; 
+        file_format = logging.Formatter('%(asctime)s; %(name)s; %(levelname)s; %(message)s') 
         file_handler.setFormatter(file_format)
         logger.addHandler(file_handler)
 
@@ -146,7 +146,7 @@ def parse_element_to_match_enum(element:BeautifulSoup, enum_class:Any) -> Any:
     
     if element is None: return None
 
-    for class_value in enum_class:
+    for class_value in reversed(enum_class):
         key_word = class_value.name.lower()
         matching_element = element.find("div", class_=lambda class_list: key_word in class_list.lower())
         
