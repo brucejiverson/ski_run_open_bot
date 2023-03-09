@@ -5,7 +5,6 @@ import tweepy
 import time
 import logging
 import os
-from datetime import datetime
 
 import ski_run
 from ski_run_open_bot.solitude_utah import scrape_ski_run_information
@@ -47,7 +46,7 @@ def send_tweet(twitter_api: tweepy.API, recently_opened_runs: Dict[str, ski_run.
             opened_run.difficulty.name
         )
         
-        tweepy_api.update_status(tweet)
+        twitter_api.update_status(tweet)
               
                 
 def monitor_for_run_status_change_and_take_action(resort:str, scrape_function: Callable, action_function: Callable, action_args=[], check_period_minute:int=20):
